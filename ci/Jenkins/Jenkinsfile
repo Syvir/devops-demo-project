@@ -47,13 +47,24 @@ pipeline {
             GIT_USER_NAME = "syvir"
         }
         steps {
-            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+            withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
                 sh '''
+                    echo "Configuration Git..."
                     git config user.email "sarahtoumert@hotmail.fr"
                     git config user.name "syvir"
+
+                    echo "Modification du fichier values.yaml..."
                     sed -i "s/tag: .*/tag: \"${build_version}\"/" helm/app/values.yaml
+
+                    echo "Vérification des modifications..."
+                    git status
+                    git diff helm/app/values.yaml
+
+                    echo "Git add et commit..."
                     git add helm/app/values.yaml
                     git commit -m "Update deployment image to version ${build_version}"
+
+                    echo "Git push avec authentification..."
                     git push https://github.com/$%7BGIT_USER_NAME%7D/$%7BGIT_REPO_NAME%7D.git HEAD:main
                 '''
             }
