@@ -18,7 +18,7 @@ pipeline {
     }
     stage('Static Code Analysis') {
       environment {
-        SONAR_URL = "http://sonarqube:9000"
+        SONAR_URL = "http://sonarqube:9000/"
       }
       steps {
         withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
@@ -47,7 +47,7 @@ pipeline {
             GIT_USER_NAME = "syvir"
         }
         steps {
-            withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GITHUB_TOKEN')]) {
+            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                     git config user.email "sarahtoumert@hotmail.fr"
                     git config user.name "syvir"
